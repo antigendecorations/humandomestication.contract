@@ -10,11 +10,6 @@
 }
 
 @font-face {
-	font-family: "Google Sans Flex";
-	src: url(https://fonts.gstatic.com/s/googlesansflex/v5/t5s6IQcYNIWbFgDgAAzZ34auoVyXkJCOvp3SFWJbN5hF8Ju1x5tKByN2l9sI40swNJwakXdYAZzz0jbnJ4qFQO5tGjLvDSkV4DyKMo6qQzwliVdHySgxyRg2.woff2) format("woff2");
-}
-
-@font-face {
 	font-family: "Format 1452";
 	src: url(./Resource/Format_1452.woff2) format("woff2");
 }
@@ -47,9 +42,6 @@ body {
 	margin: 0 auto 10em auto;
 	width: fit-content;
 	min-height: 200px;
-	/* dashed outline */
-	outline: 10px dashed #666;
-	/*  */
 }
 
 .workspace-contract {
@@ -68,11 +60,12 @@ img {
 	height: auto;
 	opacity: 0.5;
 	position: absolute;
-	top: calc(10em);
+	top: 10em;
+	
+	display: none;
 }
 
 .workspace-menu {
-	/* outline: 10px dashed #f9e; */
 	margin-bottom: 5em;
 }
 
@@ -120,41 +113,18 @@ img {
 
 .recreation-container {
 	height: auto;
-	outline: 10px dashed var(--accent-green);
 }
 
 .paper-subsrtate {
-	background-color: var(--accent-paper);
+	background-color: var(--accent-red);
 	width: 3384px;
 	height: 3792px;
 }
 
 .paper-content-container {
 	font-size: 36px;
-	padding: 1em;
+	padding: 36px;
 }
-
-.paper-content {
-	/* background-color: var(--accent-green); */
-}
-
-.contract-imprint {
-	position: absolute;
-	padding-left: 4px;
-	outline: 10px dashed var(--accent-black);
-}
-
-.contract-imprint img {
-	/* change from yellow to translucent green */
-	filter: invert(0.7) sepia(1) saturate(5) hue-rotate(90deg) brightness(1.2);
-	opacity: 0.7;
-	
-	image-rendering: pixelated;
-	width: auto;
-	height: auto;
-}
-
-
 
 
 .contract-banner {
@@ -164,40 +134,28 @@ img {
 	line-height: 149.9px;
 	letter-spacing: 1.05px;
 	word-spacing: 3.6px;
-	align-items: right;
 	width: 100%;
 	height: 226px;
+	display: flex;
+}
+
+.contract-imprint {
+	padding-left: 4px;
+}
+
+.contract-imprint img {
+	width: auto;
+	height: auto;
 }
 
 .contract-title {
-	outline: 10px dashed var(--accent-black);
 	margin-left: auto;
 	margin-top: 0;
 	padding-right: 35.8px;
 	padding-bottom: 40px;
 	width: fit-content;
+	color: var(--accent-paper);
 }
-
-/*
-.contract-banner {
-	font-family: "Gulax Regular";
-	font-weight: 600;
-	font-size: 190px;
-	line-height: 149.9px;
-	letter-spacing: 1.05px;
-	word-spacing: 3.6px;
-	align-items: right;
-	width: 100%;
-}
-
-.contract-title {
-	/* outline: 10px dashed var(--accent-black); 
-	margin-left: auto;
-	margin-top: 0;
-	padding-right: 35.8px;
-	width: fit-content;
-}
-*/
 
 .paper-horizon {
 	width: 100%;
@@ -205,7 +163,6 @@ img {
 	margin-top: 24px;
 	margin-bottom: 24px;
 	background-color: var(--accent-paper);
-	outline: 10px dashed var(--accent-red);
 }
 
 ol.contract-clause-collection {
@@ -220,14 +177,12 @@ ol.contract-clause-collection {
 	
 	font-size: 70px;
 	font-feature-settings: "kern" 1, "liga" 1, "clig" 1, "calt" 1;
-	color: rgb(from var(--accent-green) r g b / 0.7);
-	
-	outline: 10px dashed var(--accent-black);
+	color: var(--accent-black);
+	background-color: var(--accent-paper);
 }
 
 ol.contract-clause-collection li {
 	margin: 0;
-	
 	padding: 0;
 	padding-left: 20px;
 	margin-bottom: 40px;
@@ -249,7 +204,7 @@ div.clause-description {
 	padding-bottom: 26.95px;
 	padding-left: 30.9px;
 	width: 2851.1px;
-	outline: 10px dashed var(--accent-red);
+	
 	display: flex;
 }
 
@@ -264,8 +219,6 @@ div.clause-description.precise-adjustment-b {
 	padding-top: 29px;
 }
 
-
-
 li.targeting-a {
 	margin-top: 291.5px;
 }
@@ -277,14 +230,13 @@ li.targeting-a {
 	
 	display: grid;
 	place-items: center;
-	outline: 10px dashed var(--accent-black);
 }
 
 .checkbox-container {
 	width: 104px;
 	height: 104px;
 	box-sizing: border-box;
-	border: 12px solid var(--accent-green);
+	border: 12px solid var(--accent-black);
 }
 
 /*  */
@@ -376,16 +328,18 @@ span.pattern-stripe > input {
 	--phase-shift-factor: 0.3;
 	--phase-shift: calc(var(--stripe-width) * var(--phase-shift-factor));
 	--stripe-angle: 135.7deg;
+	--stripe-color: var(--accent-paper);
+	--antistripe-color: var(--accent-paper-parched);
 	
 	background-size: 1500px 1500px;
 	
 	background-position: calc(var(--phase-shift) * -1) calc(var(--phase-shift) * -1);
 	background-image: repeating-linear-gradient(
 		var(--stripe-angle),
-		transparent,
-		transparent var(--stripe-width),
-		rgb(from var(--accent-green) r g b / 0.3) var(--stripe-width),
-		rgb(from var(--accent-green) r g b / 0.3) calc(var(--stripe-width) * 2)
+		var(--antistripe-color),
+		var(--antistripe-color) var(--stripe-width),
+		var(--stripe-color) var(--stripe-width),
+		var(--stripe-color) calc(var(--stripe-width) * 2)
 	);
 	
 	--corner-radius: 11px;;
@@ -500,10 +454,8 @@ span.full-nomenclature.precise-adjustment-c > input {
 }
 
 
-
 .subtitle-horizon {
 	width: 100%;
-	outline: 10px dashed var(--accent-black);
 }
 
 .subtitle-horizon:has(.content-stipulation) {
@@ -517,7 +469,7 @@ span.full-nomenclature.precise-adjustment-c > input {
 	font-size: 85.2px;
 	font-weight: 600;
 	font-feature-settings: "kern" 1, "liga" 1, "clig" 1, "calt" 1;
-	color: rgb(from var(--accent-green) r g b / 0.7);
+	color: var(--accent-paper);
 	
 	letter-spacing: 0.47px;
 	word-spacing: 1.98px;
@@ -545,7 +497,7 @@ span.full-nomenclature.precise-adjustment-c > input {
 	font-weight: 600;
 	letter-spacing: 1.1px;
 	word-spacing: 2.7px;
-	
+	color: var(--accent-red);
 }
 
 
@@ -560,7 +512,7 @@ span.full-nomenclature.precise-adjustment-c > input {
 	font-size: 85.2px;
 	font-weight: 600;
 	font-feature-settings: "kern" 1, "liga" 1, "clig" 1, "calt" 1;
-	color: rgb(from var(--accent-green) r g b / 0.7);
+	color: var(--accent-paper);
 	
 	letter-spacing: 0.536px;
 	word-spacing: 1.68px;
@@ -584,7 +536,6 @@ span.full-nomenclature.precise-adjustment-c > input {
 	align-items: flex-end;
 	
 	background-color: var(--accent-paper);
-	outline: 10px dashed var(--accent-red);
 }
 
 
@@ -594,7 +545,7 @@ hr {
 	padding: 0;
 	border: none;
 	height: 8px;
-	background-color: var(--accent-green);
+	background-color: var(--accent-red);
 }
 
 .biometric-square {
@@ -602,13 +553,11 @@ hr {
 	margin-bottom: 24px;
 	width: 320px;
 	height: 320px;
-	background-color: var(--accent-paper);
-	outline: 10px dashed var(--accent-red);
+	background-color: var(--accent-paper-parched);
 	
 	/* tessellated diamond pattern 4 linear gradients */
 	
-	--translucent-green: rgb(from var(--accent-green) r g b / 0.7);
-	--antidiamond-color: var(--translucent-green);
+	--antidiamond-color: var(--accent-paper);
 	
 	background-image:
 		linear-gradient(135deg, var(--antidiamond-color) 25%, transparent 25%),
@@ -624,8 +573,7 @@ hr {
 	font-family: "Martain Mono Semiexpanded Regular";
 	font-size: 54px;
 	font-weight: 500;
-	color: rgb(from var(--accent-green) r g b / 0.7);
-	outline: 10px dashed var(--accent-black);
+	color: var(--accent-paper);
 	
 	letter-spacing: -4.95px;
 	

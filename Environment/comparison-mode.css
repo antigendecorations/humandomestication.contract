@@ -1,0 +1,129 @@
+
+
+
+
+.horizontal-sizer {
+	outline: 10px dashed #666;
+}
+
+.reference-image-container {
+	display: block;
+}
+
+.contract-imprint {
+	outline: 10px dashed var(--accent-black);
+}
+
+.contract-imprint img {
+	/* change from yellow to translucent green */
+	filter: invert(0.7) sepia(1) saturate(5) hue-rotate(90deg) brightness(1.2);
+	opacity: 0.7;
+}
+
+.contract-title {
+	outline: 10px dashed var(--accent-black);
+	color: black;
+}
+
+.recreation-container {
+	outline: 10px dashed var(--accent-green);
+}
+
+.paper-subsrtate {
+	background-color: var(--accent-paper);
+}
+
+.paper-horizon {
+	outline: 10px dashed var(--accent-red);
+}
+
+ol.contract-clause-collection {
+	color: rgb(from var(--accent-green) r g b / 0.7);
+	outline: 10px dashed var(--accent-black);
+	background-color: transparent;
+}
+
+div.clause-description {
+	outline: 10px dashed var(--accent-red);
+}
+
+.clause-checkbox {
+	outline: 10px dashed var(--accent-black);
+}
+
+.checkbox-container {
+	border: 12px solid var(--accent-green);
+}
+
+span.pattern-stripe > span {
+	--stripe-color: rgb(from var(--accent-green) r g b / 0.3);
+	--antistripe-color: transparent;
+}
+
+.subtitle-horizon {
+	outline: 10px dashed var(--accent-black);
+}
+
+.content-stipulation {
+	color: rgb(from var(--accent-green) r g b / 0.7);
+}
+
+.content-stipulation > span.full-nomenclature > span {
+	color: black;
+}
+
+.content-acknowledgment {
+	color: rgb(from var(--accent-green) r g b / 0.7);
+}
+
+.signature-rectangle {
+	outline: 10px dashed var(--accent-red);
+}
+
+hr {
+	background-color: var(--accent-green);
+}
+
+.biometric-square {
+	background-color: var(--accent-paper);
+	outline: 10px dashed var(--accent-red);
+	--translucent-green: rgb(from var(--accent-green) r g b / 0.7);
+	--antidiamond-color: var(--translucent-green);
+}
+
+.biometric-caption {
+	color: rgb(from var(--accent-green) r g b / 0.7);
+	outline: 10px dashed var(--accent-black);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
