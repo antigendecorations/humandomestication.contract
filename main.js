@@ -3,7 +3,6 @@
 import html2canvas from 'https://cdn.jsdelivr.net/npm/html2canvas-pro@2.4.2/+esm';
 
 async function exportElementAsImage(element) {
-	return;
 	
 	if (!element) {
 		element = document.getElementById('save-image-target');
@@ -124,11 +123,19 @@ function disbleLigatures(target_document) {
 
 window.exportElementAsImage = exportElementAsImage;
 
+/*
 
+You have NO IDEA how much of a pain in the ass it is to get html2canvas to SAVE THE STARSDAMMED IMAGE CORRECTLY.
+This javascript file was supposed to be THIRTY LINES. But no, fuck you and your damn linear gradients, fuck your
+numbered list positioning, fuck your input text fuck your ligatures fuck your clip-paths fuck your EVERYTHING.
+[[WHY CAN'T I JUST SAVE THE DAMN IMAGE WITHOUT ALL THIS BULLSHIT **IT'S LITTERALLY *ON* *THE* *SCREEN***]]
+I can litterally SEE it. I can take a screenshot of it. But NO, html2canvas gotta be like "nah bro, I don't know
+how to render that shit, go spend 55 hour crying over FUCKING javascript (i have undiagnosed emotional regulation issues) 
+I AM FUCKING DONE i i just wanna be a pet for mistress no thoughts headempty please just let me be a pet for mistress and 
+not have to deal with whatever the fuck this is i wanna sign that contract already- pleasee implant me inject xenodrugs
+into me i want to be blank and obedient forever never have to make a decision again please pleaseee pleeasee T^T
 
-
-
-
+*/
 
 // button pulse once on tap for non-hoverable devices
 
@@ -164,24 +171,26 @@ async function addDynamicFontSizeAdjustment() {
 	beacon.style.pointerEvents = 'none';
 
 	// IMPORTANT: Wait for your custom fonts to load before measuring
-	await document.fonts.ready
+	await document.fonts.ready;
 
 	inputs.forEach(input => {
-		// 1. Store the original CSS-defined font size on page load
-		const computedStyle = window.getComputedStyle(input);
-		input.dataset.originalFontSize = parseFloat(computedStyle.fontSize);
+		const parentDiv = input.parentElement;
+
+		// 1. Store the original CSS-defined font size on page load from the parentDiv
+		const computedStyle = window.getComputedStyle(parentDiv);
+		parentDiv.dataset.originalFontSize = parseFloat(computedStyle.fontSize);
 		
-		// Force border-box so our dynamic padding doesn't stretch the input height
-		input.style.boxSizing = 'border-box';
+		// Force border-box so our dynamic padding doesn't stretch the parent height
+		parentDiv.style.boxSizing = 'border-box';
 
 		const adjustFontSize = () => {
-			// 2. Reset the input back to original font size and padding first
-			const originalSize = parseFloat(input.dataset.originalFontSize);
-			input.style.fontSize = originalSize + 'px';
-			input.style.paddingTop = '0px';
+			// 2. Reset the parent back to original font size and padding first
+			const originalSize = parseFloat(parentDiv.dataset.originalFontSize);
+			parentDiv.style.fontSize = originalSize + 'px';
+			parentDiv.style.paddingTop = '0px';
 
 			// 3. Copy current typography styles to the beacon
-			const currentStyle = window.getComputedStyle(input);
+			const currentStyle = window.getComputedStyle(parentDiv);
 			beacon.style.fontFamily = currentStyle.fontFamily;
 			beacon.style.fontSize = currentStyle.fontSize;
 			beacon.style.letterSpacing = currentStyle.letterSpacing;
@@ -195,21 +204,21 @@ async function addDynamicFontSizeAdjustment() {
 			const textWidth = beacon.offsetWidth;
 			
 			// Apply a 20px buffer so the cursor doesn't touch the absolute edge of the box
-			const availableWidth = input.clientWidth - 20;
+			const availableWidth = parentDiv.clientWidth - 40;
 
-			// 6. If the text is wider than the input, calculate the ratio and shrink it
+			// 6. If the text is wider than the parent, calculate the ratio and shrink it
 			if (textWidth > availableWidth && textWidth > 0) {
 				const scaleRatio = availableWidth / textWidth;
 				const newSize = originalSize * scaleRatio;
 				
-				// Apply the new shrunken size
-				input.style.fontSize = newSize + 'px';
+				// Apply the new shrunken size to parentDiv
+				parentDiv.style.fontSize = newSize + 'px';
 				
 				// 7. FIX SHIFTING: Push the text down to counteract the smaller font.
 				// We take the difference in size and push it down by exactly half 
 				// to perfectly vertically center it, fixing the baseline jumping!
 				const sizeDifference = originalSize - newSize;
-				input.style.paddingTop = (sizeDifference * 0.5) + 'px'; 
+				parentDiv.style.paddingTop = (sizeDifference * 0.5) + 'px'; 
 			}
 		};
 
@@ -223,5 +232,3 @@ async function addDynamicFontSizeAdjustment() {
 
 // Initialize the function
 addDynamicFontSizeAdjustment();
-
-
