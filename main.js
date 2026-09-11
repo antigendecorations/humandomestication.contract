@@ -130,12 +130,6 @@ window.exportElementAsImage = exportElementAsImage;
 
 
 
-
-
-
-
-
-
 // button pulse once on tap for non-hoverable devices
 
 function addPulseAnimation() {
@@ -154,7 +148,80 @@ addPulseAnimation();
 
 
 
+// make text in input has smaller font size when it exceeds the limit of the input field
 
+async function addDynamicFontSizeAdjustment() {
+	const inputs = document.querySelectorAll('input[type="text"]');
+	const beacon = document.getElementById('input-length-beacon');
 
+	if (!beacon || inputs.length === 0) return;
+
+	// Configure the beacon so it can measure dimensions off-screen without affecting layout
+	beacon.style.position = 'absolute';
+	beacon.style.visibility = 'hidden';
+	beacon.style.display = 'inline-block';
+	beacon.style.whiteSpace = 'pre'; // Preserves exact spaces typed by user
+	beacon.style.pointerEvents = 'none';
+
+	// IMPORTANT: Wait for your custom fonts to load before measuring
+	await document.fonts.ready
+
+	inputs.forEach(input => {
+		// 1. Store the original CSS-defined font size on page load
+		const computedStyle = window.getComputedStyle(input);
+		input.dataset.originalFontSize = parseFloat(computedStyle.fontSize);
+		
+		// Force border-box so our dynamic padding doesn't stretch the input height
+		input.style.boxSizing = 'border-box';
+
+		const adjustFontSize = () => {
+			// 2. Reset the input back to original font size and padding first
+			const originalSize = parseFloat(input.dataset.originalFontSize);
+			input.style.fontSize = originalSize + 'px';
+			input.style.paddingTop = '0px';
+
+			// 3. Copy current typography styles to the beacon
+			const currentStyle = window.getComputedStyle(input);
+			beacon.style.fontFamily = currentStyle.fontFamily;
+			beacon.style.fontSize = currentStyle.fontSize;
+			beacon.style.letterSpacing = currentStyle.letterSpacing;
+			beacon.style.wordSpacing = currentStyle.wordSpacing;
+			beacon.style.fontWeight = currentStyle.fontWeight;
+
+			// 4. Put the typed text into the beacon (fallback to space if empty)
+			beacon.textContent = input.value || ' ';
+
+			// 5. Measure the widths
+			const textWidth = beacon.offsetWidth;
+			
+			// Apply a 20px buffer so the cursor doesn't touch the absolute edge of the box
+			const availableWidth = input.clientWidth - 20;
+
+			// 6. If the text is wider than the input, calculate the ratio and shrink it
+			if (textWidth > availableWidth && textWidth > 0) {
+				const scaleRatio = availableWidth / textWidth;
+				const newSize = originalSize * scaleRatio;
+				
+				// Apply the new shrunken size
+				input.style.fontSize = newSize + 'px';
+				
+				// 7. FIX SHIFTING: Push the text down to counteract the smaller font.
+				// We take the difference in size and push it down by exactly half 
+				// to perfectly vertically center it, fixing the baseline jumping!
+				const sizeDifference = originalSize - newSize;
+				input.style.paddingTop = (sizeDifference * 0.5) + 'px'; 
+			}
+		};
+
+		// Listen for typing events
+		input.addEventListener('input', adjustFontSize);
+
+		// Run immediately to format any default text already in the HTML values
+		adjustFontSize();
+	});
+}
+
+// Initialize the function
+addDynamicFontSizeAdjustment();
 
 
