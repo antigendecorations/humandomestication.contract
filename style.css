@@ -544,13 +544,16 @@ span.full-nomenclature.precise-adjustment-c > div {
 }
 
 .content-stipulation > span.full-nomenclature > div {
+	box-sizing: border-box;
+	
 	/* --horizontal-text-offset: 6px; */
 	--horizontal-text-offset: 0px;
-	width: calc(1178px - var(--horizontal-text-offset));
+	width: 1178px;
 	padding-left: var(--horizontal-text-offset);
 	
 	--vertical-text-offset: 2px;
-	height: calc(148px - var(--vertical-text-offset));
+	/* height: calc(148px - var(--vertical-text-offset)); */
+	height: 148px;
 	padding-top: var(--vertical-text-offset);
 	
 	--stripe-width: 12px;
@@ -650,11 +653,21 @@ hr {
 	overflow-x: visible;
 }
 
+/*
+	fix for font rendering issues for bold text in firefox and safari
+*/
 
+@supports (-moz-appearance: none) {
+	.contract-title {
+		font-synthesis: none;
+		-webkit-text-stroke: 6px currentColor;
+	}
 
-
-
-
+	.content-stipulation, .content-acknowledgment {
+		font-synthesis: none;
+		-webkit-text-stroke: 3px currentColor;
+	}
+}
 
 
 

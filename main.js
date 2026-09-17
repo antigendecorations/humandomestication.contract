@@ -22,6 +22,7 @@ async function exportElementAsImage(element) {
 			fixRepeatingLinearGradient(clonedDocument);
 			fixInputTextClipping(clonedDocument);
 			disbleLigatures(clonedDocument);
+			fixWebkitTextStroke(clonedDocument);
 		}
 
 	}).then(canvas => {
@@ -33,7 +34,6 @@ async function exportElementAsImage(element) {
 }
 
 function fixRepeatingLinearGradient(target_document) {
-	// Query both cloned and original documents to safely get accurate dimensions and computed styles
 	const original_document = document;
 	const all_stripe_patterns_cloned = target_document.querySelectorAll('span.pattern-stripe > div');
 	const all_stripe_patterns_original = original_document.querySelectorAll('span.pattern-stripe > div');
@@ -41,38 +41,49 @@ function fixRepeatingLinearGradient(target_document) {
 	all_stripe_patterns_cloned.forEach((pattern, index) => {
 		const original_pattern = all_stripe_patterns_original[index];
 		
-		// Read the computed CSS variables for this specific input from the ORIGINAL element
+		// Read computed styles from the original DOM element
 		const styles = window.getComputedStyle(original_pattern);
 		const width = parseFloat(styles.getPropertyValue('--stripe-width')) || 11.86;
 		const angle = parseFloat(styles.getPropertyValue('--stripe-angle')) || 135.7;
 		const shiftFactor = parseFloat(styles.getPropertyValue('--phase-shift-factor')) || 0.3;
 		
-		// Convert variables into SVG math
 		const shift = width * shiftFactor;
-		const rad = angle * (Math.PI / 180);
 		const period = width * 2;
 		
-		const x2 = (Math.sin(rad) * period).toFixed(4);
-		const y2 = (-Math.cos(rad) * period).toFixed(4);
+		// CSS angle: 0deg is UP, 90deg is RIGHT.
+		// SVG rotate: 0deg is RIGHT, 90deg is DOWN.
+		// Converting CSS gradient angle to SVG pattern rotation:
+		const rotDeg = angle - 90;
 		
-		// Colors mapped to your variables
-		const colorStripe = '%23fff5e9';    // var(--accent-paper)
-		const colorAntiStripe = '%23f9e5dd'; // var(--accent-paper-parched)
+		const colorStripe = '#fff5e9';    
+		const colorAntiStripe = '#f9e5dd'; 
 		
-		// Generate the SVG Data URI for the gradient
-		const svgUri = `data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1500' height='1500'%3E%3Cdefs%3E%3ClinearGradient id='s' x1='0' y1='0' x2='${x2}' y2='${y2}' gradientUnits='userSpaceOnUse' spreadMethod='repeat' gradientTransform='translate(-${shift},-${shift})'%3E%3Cstop offset='0' stop-color='${colorAntiStripe}'/%3E%3Cstop offset='0.5' stop-color='${colorAntiStripe}'/%3E%3Cstop offset='0.5' stop-color='${colorStripe}'/%3E%3Cstop offset='1' stop-color='${colorStripe}'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23s)'/%3E%3C/svg%3E`;
+		// Unique pattern ID per element to avoid cross-SVG cache collisions
+		const patternId = `stripe-pattern-${index}`;
+		
+		// Use SVG <pattern> instead of <linearGradient spreadMethod="repeat">
+		const svgString = `<svg xmlns='http://www.w3.org/2000/svg' width='1500' height='1500'>
+			<defs>
+				<pattern id='${patternId}' width='${period}' height='3000' patternUnits='userSpaceOnUse' patternTransform='translate(-${shift}, -${shift}) rotate(${rotDeg})'>
+					<rect width='${width}' height='3000' fill='${colorAntiStripe}'/>
+					<rect x='${width}' width='${width}' height='3000' fill='${colorStripe}'/>
+				</pattern>
+			</defs>
+			<rect width='100%' height='100%' fill='url(#${patternId})'/>
+		</svg>`;
 
-		// Apply it inline to override the CSS failure
+		const base64Svg = btoa(svgString);
+		const svgUri = `data:image/svg+xml;base64,${base64Svg}`;
+
+		// Apply inline to the cloned element
 		pattern.style.backgroundImage = `url("${svgUri}")`;
-		pattern.style.backgroundPosition = '0 0'; // Reset since shift is in SVG
-
-		// Bypass the html2canvas calc() parsing bug by calculating exact absolute pixels 
-		// using the actual width and height of the original element.
+		pattern.style.backgroundPosition = '0 0';
+		
+		// Bypass html2canvas calc() polygon bug using explicit pixel coordinates
 		const w = original_pattern.offsetWidth;
 		const h = original_pattern.offsetHeight;
 		const cr = parseFloat(styles.getPropertyValue('--corner-radius')) || 11;
 		
-		// Build an exact polygon path without calc() or variable spaces
 		const p1 = `${cr}px 0px`;
 		const p2 = `${w - cr}px 0px`;
 		const p3 = `${w}px ${cr}px`;
@@ -82,10 +93,10 @@ function fixRepeatingLinearGradient(target_document) {
 		const p7 = `0px ${h - cr}px`;
 		const p8 = `0px ${cr}px`;
 		
-		// Override the CSS polygon inline on the clone
 		pattern.style.clipPath = `polygon(${p1}, ${p2}, ${p3}, ${p4}, ${p5}, ${p6}, ${p7}, ${p8})`;
 	});
 }
+
 
 function fixInputTextClipping(target_document) {
 	// Find all target inputs in the cloned document
@@ -118,6 +129,20 @@ function disbleLigatures(target_document) {
 	const elementsToDisableLigatures = target_document.querySelectorAll('.content-acknowledgment, .content-stipulation, ol.contract-clause-collection');
 	elementsToDisableLigatures.forEach(element => {
 		element.style.fontFeatureSettings = '"kern" 1, "liga" 0, "clig" 0, "calt" 0';
+	});
+}
+
+// someone better than me can fix this s--- themselves; im out =.=
+function fixWebkitTextStroke(target_document) {
+	// fix for font rendering issues for bold text in firefox and safari
+	// chromium-based browsers unaffected
+	const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+	if (!isFirefox) return;
+	
+	const elementsToDisableStroke = target_document.querySelectorAll('.contract-title, .content-stipulation, .content-acknowledgment');
+	
+	elementsToDisableStroke.forEach(element => {
+		element.style.webkitTextStrokeWidth = '1px'; // ??? 
 	});
 }
 
@@ -187,7 +212,8 @@ async function addDynamicFontSizeAdjustment() {
 			// 2. Reset the parent back to original font size and padding first
 			const originalSize = parseFloat(parentDiv.dataset.originalFontSize);
 			parentDiv.style.fontSize = originalSize + 'px';
-			parentDiv.style.paddingTop = '0px';
+			parentDiv.style.paddingTop = '2px';
+			
 
 			// 3. Copy current typography styles to the beacon
 			const currentStyle = window.getComputedStyle(parentDiv);
@@ -218,7 +244,8 @@ async function addDynamicFontSizeAdjustment() {
 				// We take the difference in size and push it down by exactly half 
 				// to perfectly vertically center it, fixing the baseline jumping!
 				const sizeDifference = originalSize - newSize;
-				parentDiv.style.paddingTop = (sizeDifference * 0.5) + 'px'; 
+				
+				parentDiv.style.paddingTop = (sizeDifference * 0.5 + 2) + 'px';
 			}
 		};
 
